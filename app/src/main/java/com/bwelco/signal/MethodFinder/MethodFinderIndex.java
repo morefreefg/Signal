@@ -1,4 +1,7 @@
-package com.bwelco.signal.SignalPackage;
+package com.bwelco.signal.MethodFinder;
+
+import com.bwelco.signal.SignalPackage.RegisterMethodInfo;
+import com.bwelco.signal.SignalPackage.SignalRegistMethodIndex;
 
 /**
  * Created by bwelco on 2016/12/7.

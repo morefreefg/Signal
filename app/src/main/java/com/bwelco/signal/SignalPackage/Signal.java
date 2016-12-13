@@ -1,5 +1,8 @@
 package com.bwelco.signal.SignalPackage;
 
+import com.bwelco.signal.MethodFinder.MethodFinderReflex;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,6 +15,7 @@ public class Signal {
 
     static volatile Signal defaultInstance;
     private static final Map<Class<?>, List<RegisterMethodInfo>> METHOD_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, RegisterInfo> REGISTERS = new HashMap<>();
 
     public static Signal getDefault() {
         if (defaultInstance == null) {
@@ -32,15 +36,46 @@ public class Signal {
         printMethod(methodInfo);
 
         synchronized (this) {
-            for (RegisterMethodInfo registerMethodInfo : methodInfo) {
-                subscribe(target, methodInfo);
-            }
+            // 注册函数信息
+            subscribe(target, methodInfo);
         }
 
     }
 
 
-    public void subscribe(Object target, List<RegisterMethodInfo> methodInfo){
+    public void subscribe(Object target, List<RegisterMethodInfo> methodInfos){
+
+        for (RegisterMethodInfo methodInfo : methodInfos) {
+            RegisterInfo newRegister = new RegisterInfo(target, methodInfo);
+            // key 是 class 和 methodname 组成的
+            String key = newRegister.getTarget().getClass().getName() + newRegister.getMethodInfo().methodName;
+
+            if (REGISTERS.containsKey(key)) {
+                EventLogger.i("target " + target.getClass().getSimpleName() + " has already registed " +
+                        newRegister.getMethodInfo().methodName);
+                return;
+            } else {
+                REGISTERS.put(key, newRegister);
+            }
+
+        }
+    }
+
+    public void unRegist(Object target){
+        List<RegisterMethodInfo> methodInfos = findRegistedMethod(target.getClass());
+
+        for (RegisterMethodInfo methodInfo : methodInfos) {
+            RegisterInfo newRegister = new RegisterInfo(target, methodInfo);
+            String key = newRegister.getTarget().getClass().getName() + newRegister.getMethodInfo().methodName;
+            if (REGISTERS.containsKey(key)) {
+                REGISTERS.remove(key);
+            } else {
+                EventLogger.i("target " + target.getClass().getSimpleName() + " has already registed " +
+                        newRegister.getMethodInfo().methodName);
+                return;
+            }
+        }
+
 
     }
 

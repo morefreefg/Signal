@@ -1,5 +1,6 @@
-package com.bwelco.signal.SignalPackage;
+package com.bwelco.signal.MethodFinder;
 
+import com.bwelco.signal.SignalPackage.RegisterMethodInfo;
 import com.bwelco.signal.SignalReceiver;
 
 import java.lang.reflect.Method;

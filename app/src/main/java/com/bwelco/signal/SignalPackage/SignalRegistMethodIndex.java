@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class SignalRegistMethodIndex {
 
-    static final Map<Class<?>, RegisterMethodInfo> map;
+    public static final Map<Class<?>, RegisterMethodInfo> map;
     static {
         map = new HashMap<Class<?>, RegisterMethodInfo>();
         map.put(MainActivity.class, new RegisterMethodInfo("onEvent"));
