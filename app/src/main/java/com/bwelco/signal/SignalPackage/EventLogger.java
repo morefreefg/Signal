@@ -11,6 +11,7 @@ public class EventLogger {
     public static void i(String str) {
         Log.i("admin", str);
     }
+
     public static void e(String str) {
         Log.e("admin", str);
     }

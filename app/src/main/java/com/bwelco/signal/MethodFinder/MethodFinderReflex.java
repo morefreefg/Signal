@@ -83,6 +83,7 @@ public class MethodFinderReflex {
                     // 加入方法名和参数名,运行线程模式
                     registerMethodInfo.setMethodName(method.getName());
                     registerMethodInfo.setParams(parameterTypes);
+                    registerMethodInfo.setMethod(method);
                     registerMethodInfo.setThreadMode(signalAnnotation.threadMode());
 
                     ret.add(registerMethodInfo);

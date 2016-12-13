@@ -2,6 +2,7 @@ package com.bwelco.signal.SignalPackage;
 
 import com.bwelco.signal.MethodFinder.MethodFinderReflex;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,7 +115,8 @@ public class Signal {
         if (REGISTERS.containsKey(key)) {
 
             if (REGISTERS.get(key).getMethodInfo().getParams().length != args.length) {
-                EventLogger.i(" paran not match!");
+                EventLogger.i("length = " + REGISTERS.get(key).getMethodInfo().getParams().length);
+                EventLogger.i(" param num not match!");
                 return;
             }
 
@@ -125,15 +127,27 @@ public class Signal {
                 EventLogger.i("regist param = " + paramType.getName());
 
                 if (!args[index++].getClass().equals(paramType)) {
-                    EventLogger.i(" paran not match!");
+                    EventLogger.i(" param not match!");
                     return;
                 }
             }
 
             EventLogger.i("get!");
+            invokeRegister(REGISTERS.get(key), args);
 
         } else {
             EventLogger.i("can't get");
+        }
+    }
+
+
+    void invokeRegister(RegisterInfo registerInfo, Object... signal) {
+        try {
+            registerInfo.methodInfo.method.invoke(registerInfo.target, signal);
+        } catch (InvocationTargetException e) {
+            EventLogger.e("InvocationTargetException!");
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Unexpected exception", e);
         }
     }
 }

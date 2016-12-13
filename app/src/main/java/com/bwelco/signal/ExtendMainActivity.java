@@ -17,15 +17,14 @@ public class ExtendMainActivity extends MainActivity {
         findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EventLogger.i("clazz name = " + this.getClass().getSimpleName());
-                Signal.getDefault().send(ExtendMainActivity.class, "onEvent1", ExtendMainActivity.this);
+                Signal.getDefault().send(ExtendMainActivity.class, "MyEvent", "my first signal message", 3);
             }
         });
     }
 
     @SignalReceiver(threadMode = ThreadMode.POSTERTHREAD)
-    public void MyEvent(ExtendMainActivity activity, int i){
-
+    public void MyEvent(String s, int i) {
+        EventLogger.i("get message success!\nmessage = " + s + "\n" + "recv message2 = " + i);
     }
 
 

@@ -10,6 +10,7 @@ import java.util.Map;
 public class SignalRegistMethodIndex {
 
     public static final Map<Class<?>, RegisterMethodInfo> map;
+
     static {
         map = new HashMap<Class<?>, RegisterMethodInfo>();
     }

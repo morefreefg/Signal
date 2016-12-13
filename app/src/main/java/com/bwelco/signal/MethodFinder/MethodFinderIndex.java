@@ -10,7 +10,7 @@ import com.bwelco.signal.SignalPackage.SignalRegistMethodIndex;
 public class MethodFinderIndex {
 
     // Get method By annotation 通过编译时注解获取方法
-    public static RegisterMethodInfo find(Class<?> clazz){
+    public static RegisterMethodInfo find(Class<?> clazz) {
         return SignalRegistMethodIndex.map.get(clazz);
     }
 }
