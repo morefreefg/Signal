@@ -1,7 +1,5 @@
 package com.bwelco.signal.SignalPackage;
 
-import com.bwelco.signal.MainActivity;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +12,5 @@ public class SignalRegistMethodIndex {
     public static final Map<Class<?>, RegisterMethodInfo> map;
     static {
         map = new HashMap<Class<?>, RegisterMethodInfo>();
-        map.put(MainActivity.class, new RegisterMethodInfo("onEvent"));
     }
 }

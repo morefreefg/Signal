@@ -6,7 +6,7 @@ package com.bwelco.signal.SignalPackage;
 
 public enum ThreadMode {
     POSTERTHREAD,
-    MAIN,
+    MAINTHREAD,
     BACKGROUND,
     ASYNC
 }

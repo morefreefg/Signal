@@ -28,12 +28,12 @@ public class Signal {
         return defaultInstance;
     }
 
-    public void regist(Object target){
+    public void regist(Object target) {
         Class<?> targetClass = target.getClass();
         // 反射获取注解方法
         List<RegisterMethodInfo> methodInfo = findRegistedMethod(targetClass);
         // 调试、打印方法
-        printMethod(methodInfo);
+        // printMethod(methodInfo);
 
         synchronized (this) {
             // 注册函数信息
@@ -43,7 +43,7 @@ public class Signal {
     }
 
 
-    public void subscribe(Object target, List<RegisterMethodInfo> methodInfos){
+    public void subscribe(Object target, List<RegisterMethodInfo> methodInfos) {
 
         for (RegisterMethodInfo methodInfo : methodInfos) {
             RegisterInfo newRegister = new RegisterInfo(target, methodInfo);
@@ -51,7 +51,7 @@ public class Signal {
             String key = newRegister.getTarget().getClass().getName() + newRegister.getMethodInfo().methodName;
 
             if (REGISTERS.containsKey(key)) {
-                EventLogger.i("target " + target.getClass().getSimpleName() + " has already registed " +
+                EventLogger.e("target " + target.getClass().getSimpleName() + " has already registed " +
                         newRegister.getMethodInfo().methodName);
                 return;
             } else {
@@ -61,7 +61,7 @@ public class Signal {
         }
     }
 
-    public void unRegist(Object target){
+    public void unRegist(Object target) {
         List<RegisterMethodInfo> methodInfos = findRegistedMethod(target.getClass());
 
         for (RegisterMethodInfo methodInfo : methodInfos) {
@@ -70,8 +70,7 @@ public class Signal {
             if (REGISTERS.containsKey(key)) {
                 REGISTERS.remove(key);
             } else {
-                EventLogger.i("target " + target.getClass().getSimpleName() + " has already registed " +
-                        newRegister.getMethodInfo().methodName);
+                EventLogger.i("target " + target.getClass().getSimpleName() + " has not registed ");
                 return;
             }
         }
@@ -79,7 +78,7 @@ public class Signal {
 
     }
 
-    public List<RegisterMethodInfo> findRegistedMethod(Class<?> targetClass){
+    public List<RegisterMethodInfo> findRegistedMethod(Class<?> targetClass) {
         List<RegisterMethodInfo> ret = METHOD_CACHE.get(targetClass);
         if (ret == null) {
             ret = MethodFinderReflex.find(targetClass);
@@ -91,11 +90,13 @@ public class Signal {
     }
 
 
-    private void printMethod(List<RegisterMethodInfo> info){
+    private void printMethod(List<RegisterMethodInfo> info) {
         for (RegisterMethodInfo methodInfo : info) {
-            EventLogger.i("\nmethod name : " + methodInfo.getMethodName());
+            EventLogger.i("\nmethod name = " + methodInfo.getMethodName() + ", threadmode = " + methodInfo.getThreadMode());
+
+            int i = 0;
             for (Class<?> param : methodInfo.getParams()) {
-                EventLogger.i("      param : " + param.getName());
+                EventLogger.i("      param " + (++i) + " = " + param.getName());
             }
             EventLogger.i("\n");
         }
@@ -106,7 +107,33 @@ public class Signal {
 
     }
 
-    public void send(Object... args) {
+    public void send(Class<?> register, String eventName, Object... args) {
+        String key = register.getName() + eventName;
+        EventLogger.i("arg.length() = " + args.length);
 
+        if (REGISTERS.containsKey(key)) {
+
+            if (REGISTERS.get(key).getMethodInfo().getParams().length != args.length) {
+                EventLogger.i(" paran not match!");
+                return;
+            }
+
+            int index = 0;
+            for (Class<?> paramType : REGISTERS.get(key).getMethodInfo().getParams()) {
+
+                EventLogger.i("arg param = " + args[index].getClass().getName());
+                EventLogger.i("regist param = " + paramType.getName());
+
+                if (!args[index++].getClass().equals(paramType)) {
+                    EventLogger.i(" paran not match!");
+                    return;
+                }
+            }
+
+            EventLogger.i("get!");
+
+        } else {
+            EventLogger.i("can't get");
+        }
     }
 }

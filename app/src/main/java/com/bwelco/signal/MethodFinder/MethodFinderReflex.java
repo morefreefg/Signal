@@ -53,12 +53,38 @@ public class MethodFinderReflex {
             if ((modifiers & Modifier.PUBLIC) != 0 && (modifiers & MODIFIERS_IGNORE) == 0) {
                 // 获取参数类型
                 Class<?>[] parameterTypes = method.getParameterTypes();
+
+                for (int i = 0; i < parameterTypes.length; i++) {
+                    // 手动装箱
+                    Class<?> paramClass = parameterTypes[i];
+                    if (paramClass.equals(int.class)) {
+                        parameterTypes[i] = Integer.class;
+                    } else if (paramClass.equals(float.class)) {
+                        parameterTypes[i] = Float.class;
+                    } else if (paramClass.equals(boolean.class)) {
+                        parameterTypes[i] = Boolean.class;
+                    } else if (paramClass.equals(char.class)) {
+                        parameterTypes[i] = Character.class;
+                    } else if (paramClass.equals(double.class)) {
+                        parameterTypes[i] = Double.class;
+                    } else if (paramClass.equals(long.class)) {
+                        parameterTypes[i] = Long.class;
+                    } else if (paramClass.equals(short.class)) {
+                        parameterTypes[i] = Short.class;
+                    } else if (paramClass.equals(byte.class)) {
+                        parameterTypes[i] = Byte.class;
+                    }
+                }
+
                 // 获取注解方法
                 SignalReceiver signalAnnotation = method.getAnnotation(SignalReceiver.class);
+
                 if (signalAnnotation != null) {
-                    // 加入方法名和参数名
+                    // 加入方法名和参数名,运行线程模式
                     registerMethodInfo.setMethodName(method.getName());
                     registerMethodInfo.setParams(parameterTypes);
+                    registerMethodInfo.setThreadMode(signalAnnotation.threadMode());
+
                     ret.add(registerMethodInfo);
                 }
             }

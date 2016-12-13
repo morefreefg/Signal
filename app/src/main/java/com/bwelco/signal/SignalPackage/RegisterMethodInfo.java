@@ -7,13 +7,17 @@ package com.bwelco.signal.SignalPackage;
 public class RegisterMethodInfo {
 
     String methodName;
+    ThreadMode threadMode;
     Class<?>[] params;
 
     public RegisterMethodInfo(){}
 
+    public ThreadMode getThreadMode() {
+        return threadMode;
+    }
 
-    public RegisterMethodInfo(String methodName) {
-        this.methodName = methodName;
+    public void setThreadMode(ThreadMode threadMode) {
+        this.threadMode = threadMode;
     }
 
     public Class<?>[] getParams() {
