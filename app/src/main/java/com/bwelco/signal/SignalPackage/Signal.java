@@ -1,5 +1,7 @@
 package com.bwelco.signal.SignalPackage;
 
+import android.os.Looper;
+
 import com.bwelco.signal.MethodFinder.MethodFinderReflex;
 
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +19,13 @@ public class Signal {
     static volatile Signal defaultInstance;
     private static final Map<Class<?>, List<RegisterMethodInfo>> METHOD_CACHE = new ConcurrentHashMap<>();
     private static final Map<String, RegisterInfo> REGISTERS = new HashMap<>();
+    // ThreadLocal
+    private final ThreadLocal<SendingThreadState> currentSendingThreadState = new ThreadLocal<SendingThreadState>() {
+        @Override
+        protected SendingThreadState initialValue() {
+            return new SendingThreadState();
+        }
+    };
 
     public static Signal getDefault() {
         if (defaultInstance == null) {
@@ -108,8 +117,40 @@ public class Signal {
 
     }
 
-    public void send(Class<?> register, String eventName, Object... args) {
-        String key = register.getName() + eventName;
+    public void send(Class<?> targetClass, String methodName, Object... args) {
+
+
+        // 获取当前线程的SendingThreadState
+        SendingThreadState currentThread = currentSendingThreadState.get();
+        // 获取队列
+        List<Event> eventQueue = currentThread.eventQueue;
+        // 添加当前事件
+        eventQueue.add(new Event(targetClass, methodName, args));
+
+        // 正在发送事件
+        if (!currentThread.isSending) {
+            // 判断是否是主线程
+            currentThread.isMainThread = Looper.getMainLooper().getThread() == Thread.currentThread();
+
+            try {
+                // 清空发送队列
+                while (!eventQueue.isEmpty()) {
+                    sendSingleEvent(eventQueue.remove(0), currentThread);
+                }
+
+            } finally {
+                // 重置线程发送状态
+                currentThread.isSending = false;
+                currentThread.isMainThread = false;
+            }
+
+        }
+    }
+
+    void sendSingleEvent(Event event, SendingThreadState threadState) {
+
+        String key = event.targetClass.getName() + event.getTargetMethod();
+        Object[] args = event.getParams();
         EventLogger.i("arg.length() = " + args.length);
 
         if (REGISTERS.containsKey(key)) {
@@ -122,7 +163,6 @@ public class Signal {
 
             int index = 0;
             for (Class<?> paramType : REGISTERS.get(key).getMethodInfo().getParams()) {
-
                 EventLogger.i("arg param = " + args[index].getClass().getName());
                 EventLogger.i("regist param = " + paramType.getName());
 
@@ -133,13 +173,39 @@ public class Signal {
             }
 
             EventLogger.i("get!");
-            invokeRegister(REGISTERS.get(key), args);
+            sendEventToRegister(REGISTERS.get(key), event, threadState);
 
         } else {
             EventLogger.i("can't get");
         }
     }
 
+    void sendEventToRegister(RegisterInfo register, Event event, SendingThreadState threadState){
+        switch (register.methodInfo.getThreadMode()) {
+
+            case POSTERTHREAD:
+                invokeRegister(register, event.getParams());
+                break;
+
+            case MAINTHREAD:
+                // 主线程往主线程发
+                if (threadState.isMainThread) {
+                    invokeRegister(register, event.getParams());
+                } else {
+                    // 其他线程往主线程发
+
+                }
+                break;
+
+            case BACKGROUND:
+
+                break;
+
+            case ASYNC:
+
+                break;
+        }
+    }
 
     void invokeRegister(RegisterInfo registerInfo, Object... signal) {
         try {
