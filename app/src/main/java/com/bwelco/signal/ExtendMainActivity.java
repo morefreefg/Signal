@@ -1,6 +1,7 @@
 package com.bwelco.signal;
 
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 
 import com.bwelco.signal.SignalPackage.EventLogger;
@@ -17,13 +18,28 @@ public class ExtendMainActivity extends MainActivity {
         findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Signal.getDefault().send(ExtendMainActivity.class, "MyEvent", "my first signal message", 3);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Signal.getDefault().send(ExtendMainActivity.class, "MyEvent", "my first signal message", 2);
+                    }
+                });
+                thread.start();
+
             }
+
         });
     }
 
-    @SignalReceiver(threadMode = ThreadMode.POSTERTHREAD)
+    @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
     public void MyEvent(String s, int i) {
+
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            EventLogger.i("main thread");
+        } else {
+            EventLogger.i("thread :" + Thread.currentThread().getName() + " id = " + Thread.currentThread().getId());
+        }
+
         EventLogger.i("get message success!\nmessage = " + s + "\n" + "recv message2 = " + i);
     }
 

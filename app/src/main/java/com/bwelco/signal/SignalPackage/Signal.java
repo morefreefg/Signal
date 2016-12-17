@@ -3,6 +3,7 @@ package com.bwelco.signal.SignalPackage;
 import android.os.Looper;
 
 import com.bwelco.signal.MethodFinder.MethodFinderReflex;
+import com.bwelco.signal.Sender.MainThreadSender;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -19,6 +20,8 @@ public class Signal {
     static volatile Signal defaultInstance;
     private static final Map<Class<?>, List<RegisterMethodInfo>> METHOD_CACHE = new ConcurrentHashMap<>();
     private static final Map<String, RegisterInfo> REGISTERS = new HashMap<>();
+    private MainThreadSender mainThreadSender;
+
     // ThreadLocal
     private final ThreadLocal<SendingThreadState> currentSendingThreadState = new ThreadLocal<SendingThreadState>() {
         @Override
@@ -114,7 +117,8 @@ public class Signal {
 
 
     private Signal() {
-
+        EventLogger.i("init");
+        mainThreadSender = new MainThreadSender(this, Looper.getMainLooper());
     }
 
     public void send(Class<?> targetClass, String methodName, Object... args) {
@@ -181,6 +185,7 @@ public class Signal {
     }
 
     void sendEventToRegister(RegisterInfo register, Event event, SendingThreadState threadState){
+
         switch (register.methodInfo.getThreadMode()) {
 
             case POSTERTHREAD:
@@ -188,12 +193,14 @@ public class Signal {
                 break;
 
             case MAINTHREAD:
+
                 // 主线程往主线程发
                 if (threadState.isMainThread) {
                     invokeRegister(register, event.getParams());
                 } else {
                     // 其他线程往主线程发
 
+                    mainThreadSender.handleEvent(event, register);
                 }
                 break;
 
@@ -207,7 +214,7 @@ public class Signal {
         }
     }
 
-    void invokeRegister(RegisterInfo registerInfo, Object... signal) {
+    public void invokeRegister(RegisterInfo registerInfo, Object... signal) {
         try {
             registerInfo.methodInfo.method.invoke(registerInfo.target, signal);
         } catch (InvocationTargetException e) {

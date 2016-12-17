@@ -8,7 +8,7 @@ public class PendingEventQueue {
     PendingEvent head;
     PendingEvent tail;
 
-    synchronized void enqueue(PendingEvent pendingEvent) {
+    public synchronized void enqueue(PendingEvent pendingEvent) {
         if (pendingEvent == null)
             throw new NullPointerException("pendingEvent is null, can't be enqueued");
 
@@ -24,6 +24,22 @@ public class PendingEventQueue {
         notifyAll();
     }
 
+    public synchronized PendingEvent poll() {
+        PendingEvent pendingEvent = head;
+        if (head != null) {
+            head = head.next;
+            if (head == null) {
+                tail = null;
+            }
+        }
+        return pendingEvent;
+    }
 
+    public synchronized PendingEvent poll(int maxMillisToWait) throws InterruptedException {
+        if (head == null) {
+            wait(maxMillisToWait);
+        }
+        return poll();
+    }
 
 }

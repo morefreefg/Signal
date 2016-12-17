@@ -24,9 +24,9 @@ public class PendingEvent {
         }
     }
 
-    Event event;
-    RegisterInfo registerInfo;
-    PendingEvent next;
+    public Event event;
+    public RegisterInfo registerInfo;
+    public PendingEvent next;
     private int index;
 
     private PendingEvent(Event event, RegisterInfo registerInfo) {
@@ -34,7 +34,7 @@ public class PendingEvent {
         this.registerInfo = registerInfo;
     }
 
-    static PendingEvent obtainPendingPost(Event event, RegisterInfo registerInfo) {
+    public static PendingEvent obtainPendingPost(Event event, RegisterInfo registerInfo) {
         synchronized (PENDING_EVENT_POOL) {
             // 池里面对象不够用了
             if (free_index.size() == 0) return new PendingEvent(event, registerInfo);
@@ -50,7 +50,7 @@ public class PendingEvent {
         }
     }
 
-    static void releasePendingEvent(PendingEvent pendingEvent) {
+    public static void releasePendingEvent(PendingEvent pendingEvent) {
         synchronized (PENDING_EVENT_POOL) {
             pendingEvent.event = null;
             pendingEvent.registerInfo = null;
