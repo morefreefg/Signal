@@ -3,6 +3,9 @@ package com.bwelco.signal.SignalPackage;
 import android.os.Looper;
 
 import com.bwelco.signal.MethodFinder.MethodFinderReflex;
+import com.bwelco.signal.Sender.AsyncSender;
+import com.bwelco.signal.Sender.BackgroundSender;
+import com.bwelco.signal.Sender.EventHandler;
 import com.bwelco.signal.Sender.MainThreadSender;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by bwelco on 2016/12/7.
@@ -20,7 +25,10 @@ public class Signal {
     static volatile Signal defaultInstance;
     private static final Map<Class<?>, List<RegisterMethodInfo>> METHOD_CACHE = new ConcurrentHashMap<>();
     private static final Map<String, RegisterInfo> REGISTERS = new HashMap<>();
-    private MainThreadSender mainThreadSender;
+    private static ExecutorService executorService;
+
+    private EventHandler mainThreadSender, backgroundSender, asyncSender;
+
 
     // ThreadLocal
     private final ThreadLocal<SendingThreadState> currentSendingThreadState = new ThreadLocal<SendingThreadState>() {
@@ -119,6 +127,8 @@ public class Signal {
     private Signal() {
         EventLogger.i("init");
         mainThreadSender = new MainThreadSender(this, Looper.getMainLooper());
+        backgroundSender = new BackgroundSender(this);
+        asyncSender = new AsyncSender(this);
     }
 
     public void send(Class<?> targetClass, String methodName, Object... args) {
@@ -184,7 +194,7 @@ public class Signal {
         }
     }
 
-    void sendEventToRegister(RegisterInfo register, Event event, SendingThreadState threadState){
+    void sendEventToRegister(RegisterInfo register, Event event, SendingThreadState threadState) {
 
         switch (register.methodInfo.getThreadMode()) {
 
@@ -199,17 +209,16 @@ public class Signal {
                     invokeRegister(register, event.getParams());
                 } else {
                     // 其他线程往主线程发
-
                     mainThreadSender.handleEvent(event, register);
                 }
                 break;
 
             case BACKGROUND:
-
+                backgroundSender.handleEvent(event, register);
                 break;
 
             case ASYNC:
-
+                asyncSender.handleEvent(event, register);
                 break;
         }
     }
@@ -223,4 +232,13 @@ public class Signal {
             throw new IllegalStateException("Unexpected exception", e);
         }
     }
+
+    public ExecutorService getExecutorService() {
+        if (executorService == null) {
+            executorService = Executors.newCachedThreadPool();
+        }
+
+        return executorService;
+    }
+
 }

@@ -21,6 +21,8 @@ public class ExtendMainActivity extends MainActivity {
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        EventLogger.i("send thread :" + Thread.currentThread().getName() +
+                                " id = " + Thread.currentThread().getId());
                         Signal.getDefault().send(ExtendMainActivity.class, "MyEvent", "my first signal message", 2);
                     }
                 });
@@ -31,7 +33,7 @@ public class ExtendMainActivity extends MainActivity {
         });
     }
 
-    @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
+    @SignalReceiver(threadMode = ThreadMode.BACKGROUND)
     public void MyEvent(String s, int i) {
 
         if (Looper.myLooper() == Looper.getMainLooper()) {
