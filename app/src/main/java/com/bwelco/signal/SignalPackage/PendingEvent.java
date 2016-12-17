@@ -36,7 +36,7 @@ public class PendingEvent {
 
     public static PendingEvent obtainPendingPost(Event event, RegisterInfo registerInfo) {
         synchronized (PENDING_EVENT_POOL) {
-            EventLogger.i("pool free size = " + free_index.size());
+           // EventLogger.i("pool free size = " + free_index.size());
 
             // 池里面对象不够用了
             if (free_index.size() == 0) return new PendingEvent(event, registerInfo);

@@ -165,20 +165,20 @@ public class Signal {
 
         String key = event.targetClass.getName() + event.getTargetMethod();
         Object[] args = event.getParams();
-        EventLogger.i("arg.length() = " + args.length);
+       // EventLogger.i("arg.length() = " + args.length);
 
         if (REGISTERS.containsKey(key)) {
 
             if (REGISTERS.get(key).getMethodInfo().getParams().length != args.length) {
-                EventLogger.i("length = " + REGISTERS.get(key).getMethodInfo().getParams().length);
+               // EventLogger.i("length = " + REGISTERS.get(key).getMethodInfo().getParams().length);
                 EventLogger.i(" param num not match!");
                 return;
             }
 
             int index = 0;
             for (Class<?> paramType : REGISTERS.get(key).getMethodInfo().getParams()) {
-                EventLogger.i("arg param = " + args[index].getClass().getName());
-                EventLogger.i("regist param = " + paramType.getName());
+//                EventLogger.i("arg param = " + args[index].getClass().getName());
+//                EventLogger.i("regist param = " + paramType.getName());
 
                 if (!args[index++].getClass().equals(paramType)) {
                     EventLogger.i(" param not match!");
@@ -186,7 +186,7 @@ public class Signal {
                 }
             }
 
-            EventLogger.i("get!");
+            //EventLogger.i("get!");
             sendEventToRegister(REGISTERS.get(key), event, threadState);
 
         } else {
