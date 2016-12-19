@@ -7,7 +7,7 @@ import java.util.Stack;
  * Created by bwelco on 2016/12/16.
  */
 
-public class PendingEvent {
+public class PendingEvent implements Comparable {
 
     // 对象池 防止频繁创建对象
     public final static ArrayList<PendingEvent> PENDING_EVENT_POOL = new ArrayList<PendingEvent>();
@@ -36,7 +36,7 @@ public class PendingEvent {
 
     public static PendingEvent obtainPendingPost(Event event, RegisterInfo registerInfo) {
         synchronized (PENDING_EVENT_POOL) {
-           // EventLogger.i("pool free size = " + free_index.size());
+            // EventLogger.i("pool free size = " + free_index.size());
 
             // 池里面对象不够用了
             if (free_index.size() == 0) return new PendingEvent(event, registerInfo);
@@ -61,4 +61,16 @@ public class PendingEvent {
         }
     }
 
+
+    @Override
+    public int compareTo(Object o) {
+        PendingEvent temp = (PendingEvent) o;
+        if (this.event.atTime > temp.event.atTime) {
+            return 1;
+        } else if (this.event.atTime < temp.event.atTime) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
 }

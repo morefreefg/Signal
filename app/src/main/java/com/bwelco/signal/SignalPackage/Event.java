@@ -8,11 +8,13 @@ public class Event {
     Class<?> targetClass;
     String targetMethod;
     Object[] params;
+    long atTime;
 
-    public Event(Class<?> targetClass, String targetMethod, Object[] params) {
+    public Event(Class<?> targetClass, String targetMethod, Object[] params, long atTime) {
         this.targetClass = targetClass;
         this.targetMethod = targetMethod;
         this.params = params;
+        this.atTime = atTime;
     }
 
     public Class<?> getTargetClass() {
@@ -37,5 +39,13 @@ public class Event {
 
     public void setParams(Object[] params) {
         this.params = params;
+    }
+
+    public long getAtTime() {
+        return atTime;
+    }
+
+    public void setAtTime(long delayMillis) {
+        this.atTime = delayMillis;
     }
 }

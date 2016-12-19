@@ -7,8 +7,6 @@ import com.bwelco.signal.SignalPackage.EventLogger;
 import com.bwelco.signal.SignalPackage.Signal;
 import com.bwelco.signal.SignalPackage.ThreadMode;
 
-import java.util.Random;
-
 public class ExtendMainActivity extends MainActivity {
 
     @Override
@@ -19,56 +17,36 @@ public class ExtendMainActivity extends MainActivity {
         findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                EventLogger.i("send");
+
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        while (true)
-                            Signal.getDefault().send(ExtendMainActivity.class, "MyEvent",
-                                    "from thread " + Thread.currentThread().getName(), new Random().nextInt());
+                        Signal.getDefault().sendDelayed(ExtendMainActivity.class, "MyEvent", 10,
+                                    "from thread " + Thread.currentThread().getName(), 1);
+
+                        Signal.getDefault().sendDelayed(ExtendMainActivity.class, "MyEvent", 6000,
+                                "from thread " + Thread.currentThread().getName(), 2);
+
+                        Signal.getDefault().sendDelayed(ExtendMainActivity.class, "MyEvent", 5000,
+                                "from thread " + Thread.currentThread().getName(), 3);
+
+                        Signal.getDefault().sendDelayed(ExtendMainActivity.class, "MyEvent", 3000,
+                                "from thread " + Thread.currentThread().getName(), 4);
                     }
                 });
-
-                Thread thread2 = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (true)
-                            Signal.getDefault().send(ExtendMainActivity.class, "MyEvent",
-                                    "from thread " + Thread.currentThread().getName(), new Random().nextInt());
-                    }
-                });
-
-                Thread thread3 = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (true)
-                            Signal.getDefault().send(ExtendMainActivity.class, "MyEvent",
-                                    "from thread " + Thread.currentThread().getName(), new Random().nextInt());
-                    }
-                });
-
-                Thread thread4 = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (true)
-                            Signal.getDefault().send(ExtendMainActivity.class, "MyEvent",
-                                    "from thread " + Thread.currentThread().getName(), new Random().nextInt());
-                    }
-                });
-
 
                 thread.start();
-                thread2.start();
-                thread3.start();
-                thread4.start();
 
             }
 
         });
     }
 
-    @SignalReceiver(threadMode = ThreadMode.ASYNC)
-    public void MyEvent(String s, int i) {
-        EventLogger.i(s + "i = " + i);
+    @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
+    public void MyEvent(String s, int i) throws InterruptedException {
+        EventLogger.i("get message" + s + " i = " + i);
     }
 
 

@@ -11,11 +11,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Created by bwelco on 2016/12/14.
  */
 
-public class AsyncSender implements Runnable, EventHandler{
+public class AsyncSender implements Runnable, EventHandler {
 
     Signal signal;
     LinkedBlockingQueue<PendingEvent> queue;
-    public AsyncSender(Signal signal){
+
+    public AsyncSender(Signal signal) {
         this.signal = signal;
         queue = new LinkedBlockingQueue<PendingEvent>();
     }
@@ -37,6 +38,7 @@ public class AsyncSender implements Runnable, EventHandler{
     public void run() {
 
         PendingEvent pendingEvent = null;
+
         try {
             pendingEvent = queue.take();
         } catch (InterruptedException e) {
