@@ -1,13 +1,12 @@
 package com.bwelco.signal.SignalPackage;
 
 import android.os.Looper;
-import android.os.SystemClock;
 
 import com.bwelco.signal.MethodFinder.MethodFinderReflex;
 import com.bwelco.signal.Sender.AsyncSender;
-import com.bwelco.signal.Sender.BackgroundSender;
 import com.bwelco.signal.Sender.EventHandler;
 import com.bwelco.signal.Sender.MainThreadSender;
+import com.bwelco.signal.Sender.TempBackgroundSender;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -128,25 +127,21 @@ public class Signal {
     private Signal() {
         EventLogger.i("init");
         mainThreadSender = new MainThreadSender(this, Looper.getMainLooper());
-        backgroundSender = new BackgroundSender(this);
+        backgroundSender = new TempBackgroundSender("Signal background Thread", this);
         asyncSender = new AsyncSender(this);
     }
 
     public void send(Class<?> targetClass, String methodName, Object... args) {
-        sendDelayed(targetClass, methodName, 0, args);
+       sendDelayed(targetClass, methodName, 0, args);
     }
 
-    public void sendDelayed(Class<?> targetClass, String methodName, long delayMillis, Object... args) {
-        sendAtTime(targetClass, methodName, delayMillis + SystemClock.uptimeMillis(), args);
-    }
-
-    public void sendAtTime(Class<?> targetClass, String methodName, long atTime, Object... args) {
+    public void sendDelayed(Class<?> targetClass, String methodName,long delayMillis, Object... args){
         // 获取当前线程的SendingThreadState
         SendingThreadState currentThread = currentSendingThreadState.get();
         // 获取队列
         List<Event> eventQueue = currentThread.eventQueue;
         // 添加当前事件
-        eventQueue.add(new Event(targetClass, methodName, args, atTime));
+        eventQueue.add(new Event(targetClass, methodName, args, delayMillis));
 
         // 正在发送事件
         if (!currentThread.isSending) {
@@ -172,12 +167,12 @@ public class Signal {
 
         String key = event.targetClass.getName() + event.getTargetMethod();
         Object[] args = event.getParams();
-        // EventLogger.i("arg.length() = " + args.length);
+       // EventLogger.i("arg.length() = " + args.length);
 
         if (REGISTERS.containsKey(key)) {
 
             if (REGISTERS.get(key).getMethodInfo().getParams().length != args.length) {
-                // EventLogger.i("length = " + REGISTERS.get(key).getMethodInfo().getParams().length);
+               // EventLogger.i("length = " + REGISTERS.get(key).getMethodInfo().getParams().length);
                 EventLogger.i(" param num not match!");
                 return;
             }

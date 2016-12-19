@@ -1,7 +1,7 @@
 package com.bwelco.signal.Sender;
 
 import android.os.Handler;
-import android.os.Looper;
+import android.os.HandlerThread;
 import android.os.Message;
 
 import com.bwelco.signal.SignalPackage.Event;
@@ -12,25 +12,24 @@ import com.bwelco.signal.SignalPackage.Signal;
 import java.util.concurrent.PriorityBlockingQueue;
 
 /**
- * Created by bwelco on 2016/12/14.
+ * Created by bwelco on 2016/12/19.
  */
 
-public class MainThreadSender extends Handler implements EventHandler {
+public class TempBackgroundSender extends HandlerThread implements EventHandler {
 
-    Looper looper;
+    BackgroundHandler handler;
     Signal signal;
     PriorityBlockingQueue<PendingEvent> queue;
 
-    public MainThreadSender(Signal signal, Looper looper) {
-        super(looper);
-        this.looper = looper;
+    public TempBackgroundSender(String name, Signal signal) {
+        super(name);
+        handler = new BackgroundHandler();
         this.signal = signal;
         queue = new PriorityBlockingQueue<PendingEvent>();
     }
 
     @Override
     public void handleEvent(Event event, RegisterInfo registerInfo) {
-
         PendingEvent pendingEvent = PendingEvent.obtainPendingPost(event, registerInfo);
 
         synchronized (this) {
@@ -46,29 +45,21 @@ public class MainThreadSender extends Handler implements EventHandler {
                 e.printStackTrace();
             }
 
-            sendMessageDelayed(message, delayMillis);
+            handler.sendMessageDelayed(message, delayMillis);
         }
     }
 
-    @Override
-    public void handleMessage(Message msg) {
-        super.handleMessage(msg);
+    class BackgroundHandler extends Handler {
 
-        synchronized (this) {
-            PendingEvent pendingEvent = (PendingEvent) msg.obj;
-            signal.invokeRegister(pendingEvent.registerInfo, pendingEvent.event.getParams());
-            PendingEvent.releasePendingEvent(pendingEvent);
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            synchronized (this) {
+                PendingEvent pendingEvent = (PendingEvent) msg.obj;
+                signal.invokeRegister(pendingEvent.registerInfo, pendingEvent.event.getParams());
+                PendingEvent.releasePendingEvent(pendingEvent);
+            }
         }
     }
-
-//    static class PendingEventList extends ArrayList<PendingEvent> {
-//        public void addByTime(PendingEvent pendingEvent){
-//            long time = pendingEvent.event.getAtTime();
-//            for (int i = 0 ; i < size(); i++) {
-//                if (time)
-//            }
-//        }
-//    }
-
-
 }

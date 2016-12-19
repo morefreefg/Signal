@@ -44,7 +44,7 @@ public class ExtendMainActivity extends MainActivity {
         });
     }
 
-    @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
+    @SignalReceiver(threadMode = ThreadMode.BACKGROUND)
     public void MyEvent(String s, int i) throws InterruptedException {
         EventLogger.i("get message" + s + " i = " + i);
     }

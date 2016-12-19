@@ -45,6 +45,12 @@ public class AsyncSender implements Runnable, EventHandler {
             throw new IllegalStateException("can't get pending event from LinkedBlockingQueue.");
         }
 
+        try {
+            Thread.sleep(pendingEvent.event.getDelayMillis());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         signal.invokeRegister(pendingEvent.registerInfo, pendingEvent.event.getParams());
         PendingEvent.releasePendingEvent(pendingEvent);
     }

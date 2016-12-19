@@ -1,5 +1,7 @@
 package com.bwelco.signal.SignalPackage;
 
+import android.os.SystemClock;
+
 /**
  * Created by bwelco on 2016/12/14.
  */
@@ -8,13 +10,15 @@ public class Event {
     Class<?> targetClass;
     String targetMethod;
     Object[] params;
+    long delayMillis;
     long atTime;
 
-    public Event(Class<?> targetClass, String targetMethod, Object[] params, long atTime) {
+    public Event(Class<?> targetClass, String targetMethod, Object[] params, long delayMillis) {
         this.targetClass = targetClass;
         this.targetMethod = targetMethod;
         this.params = params;
-        this.atTime = atTime;
+        this.delayMillis = delayMillis;
+        this.atTime = SystemClock.uptimeMillis();
     }
 
     public Class<?> getTargetClass() {
@@ -41,11 +45,19 @@ public class Event {
         this.params = params;
     }
 
+    public long getDelayMillis() {
+        return delayMillis;
+    }
+
+    public void setDelayMillis(long delayMillis) {
+        this.delayMillis = delayMillis;
+    }
+
     public long getAtTime() {
         return atTime;
     }
 
-    public void setAtTime(long delayMillis) {
-        this.atTime = delayMillis;
+    public void setAtTime(long atTime) {
+        this.atTime = atTime;
     }
 }
