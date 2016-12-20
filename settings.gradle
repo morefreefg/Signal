@@ -1,1 +1,1 @@
-include ':app', ':apt'
+include ':SignalAnnotationProcesser', ':SignalPerformance', ':signal'
