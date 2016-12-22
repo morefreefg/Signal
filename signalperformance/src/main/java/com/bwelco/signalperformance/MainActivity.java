@@ -21,18 +21,18 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Signal.getDefault().send(MainActivity.class, "get", 1);
+                Signal.getDefault().send(MainActivity.class, "get","test", 1);
             }
         });
     }
 
     @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
-    public void get(float f){
-        Log.i("admin", "get message " + f);
+    public void get(String s, int i){
+        Log.i("admin", "get message " + s);
     }
 
     @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
-    public void get_private(int a){
+    public void get_private(float a){
 
     }
 }

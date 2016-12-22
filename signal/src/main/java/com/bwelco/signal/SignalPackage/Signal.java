@@ -2,6 +2,7 @@ package com.bwelco.signal.SignalPackage;
 
 import android.os.Looper;
 
+import com.bwelco.signal.MethodFinder.MethodFinderIndex;
 import com.bwelco.signal.MethodFinder.MethodFinderReflex;
 import com.bwelco.signal.Sender.AsyncSender;
 import com.bwelco.signal.Sender.EventHandler;
@@ -52,7 +53,13 @@ public class Signal {
     public void regist(Object target) {
         Class<?> targetClass = target.getClass();
         // 反射获取注解方法
+
         List<RegisterMethodInfo> methodInfo = findRegistedMethod(targetClass);
+        if (methodInfo == null) {
+            EventLogger.i("can not regist");
+            return;
+        }
+
         // 调试、打印方法
         // printMethod(methodInfo);
 
@@ -62,6 +69,8 @@ public class Signal {
         }
 
     }
+    
+    
 
 
     public void subscribe(Object target, List<RegisterMethodInfo> methodInfos) {
@@ -77,6 +86,9 @@ public class Signal {
                         newRegister.getMethodInfo().methodName);
                 return;
             } else {
+                EventLogger.i("has put!");
+                EventLogger.i("key = " + key);
+
                 REGISTERS.put(key, newRegister);
             }
 
@@ -99,16 +111,40 @@ public class Signal {
 
 
     }
+    
+//    public List<RegisterMethodInfo> findRegistedMethodByAnnotationIndex(Class<?> targetClass){
+//        List<RegisterMethodInfo> ret = METHOD_CACHE.get(targetClass);
+//        if (ret == null) {
+//            ret = MethodFinderIndex.find(targetClass);
+//            // 放入缓存里面
+//            METHOD_CACHE.put(targetClass, ret);
+//        }
+//        return ret;
+//    }
 
     public List<RegisterMethodInfo> findRegistedMethod(Class<?> targetClass) {
         List<RegisterMethodInfo> ret = METHOD_CACHE.get(targetClass);
-        if (ret == null) {
-            ret = MethodFinderReflex.find(targetClass);
-            // 放入缓存里面
-            METHOD_CACHE.put(targetClass, ret);
-        }
 
-        return ret;
+        if (ret == null) {
+            ret = MethodFinderIndex.find(targetClass);
+            if (ret == null) {
+                ret = MethodFinderReflex.find(targetClass);
+                if (ret == null) {
+                    EventLogger.i("can not fetch subscriber");
+                    return null;
+                } else {
+                    METHOD_CACHE.put(targetClass, ret);
+                    return ret;
+                }
+            } else {
+                EventLogger.i("fetch index");
+
+                METHOD_CACHE.put(targetClass, ret);
+                return ret;
+            }
+        } else {
+            return ret;
+        }
     }
 
 
@@ -126,7 +162,6 @@ public class Signal {
 
 
     private Signal() {
-        EventLogger.i("init");
         mainThreadSender = new MainThreadSender(this, Looper.getMainLooper());
         backgroundSender = new TempBackgroundSender("Signal background Thread", this);
         asyncSender = new AsyncSender(this);
@@ -168,6 +203,7 @@ public class Signal {
 
         String key = event.targetClass.getName() + event.getTargetMethod();
         Object[] args = event.getParams();
+        EventLogger.i("send key = " + key);
        // EventLogger.i("arg.length() = " + args.length);
 
         if (REGISTERS.containsKey(key)) {
