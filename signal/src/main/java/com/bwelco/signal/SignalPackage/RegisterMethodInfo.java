@@ -16,6 +16,13 @@ public class RegisterMethodInfo {
     public RegisterMethodInfo() {
     }
 
+    public RegisterMethodInfo(String methodName, ThreadMode threadMode, Method method, Class<?>[] params) {
+        this.methodName = methodName;
+        this.threadMode = threadMode;
+        this.method = method;
+        this.params = params;
+    }
+
     public Method getMethod() {
         return method;
     }

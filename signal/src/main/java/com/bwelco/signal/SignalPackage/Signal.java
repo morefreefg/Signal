@@ -67,6 +67,7 @@ public class Signal {
     public void subscribe(Object target, List<RegisterMethodInfo> methodInfos) {
 
         for (RegisterMethodInfo methodInfo : methodInfos) {
+
             RegisterInfo newRegister = new RegisterInfo(target, methodInfo);
             // key 是 class 和 methodname 组成的
             String key = newRegister.getTarget().getClass().getName() + newRegister.getMethodInfo().methodName;

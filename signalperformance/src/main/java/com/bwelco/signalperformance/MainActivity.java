@@ -27,17 +27,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
-    public void get(int i){
-        Log.i("admin", "get message " + i);
+    public void get(float f){
+        Log.i("admin", "get message " + f);
     }
 
     @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
-    public void get2(int i){
-        Log.i("admin", "get message " + i);
-    }
+    public void get_private(int a){
 
-    @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
-    public void get3(int i){
-        Log.i("admin", "get message " + i);
     }
 }
