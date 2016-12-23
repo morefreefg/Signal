@@ -1,7 +1,5 @@
 package com.bwelco.signal;
 
-import com.bwelco.signal.SignalPackage.ThreadMode;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -1,7 +1,4 @@
-package com.bwelco.signal.MethodFinder;
-
-import com.bwelco.signal.SignalPackage.EventLogger;
-import com.bwelco.signal.SignalPackage.RegisterMethodInfo;
+package com.bwelco.signal;
 
 import java.util.List;
 
@@ -21,7 +18,7 @@ public class MethodFinderIndex {
             else {
                 try {
                     Class injectorClazz = Class.forName("com.bwelco.signalsperf.MySignalIndex");
-                    getRegisterInfoInterface = (GetRegisterInfoInterface)injectorClazz.newInstance();
+                    getRegisterInfoInterface = (GetRegisterInfoInterface) injectorClazz.newInstance();
                 } catch (Exception e) {
                     e.printStackTrace();
                     EventLogger.i("Signal index class not found");

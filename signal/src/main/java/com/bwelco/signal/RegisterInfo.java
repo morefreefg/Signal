@@ -1,4 +1,4 @@
-package com.bwelco.signal.SignalPackage;
+package com.bwelco.signal;
 
 /**
  * Created by bwelco on 2016/12/13.

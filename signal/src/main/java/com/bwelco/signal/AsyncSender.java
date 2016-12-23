@@ -1,9 +1,4 @@
-package com.bwelco.signal.Sender;
-
-import com.bwelco.signal.SignalPackage.Event;
-import com.bwelco.signal.SignalPackage.PendingEvent;
-import com.bwelco.signal.SignalPackage.RegisterInfo;
-import com.bwelco.signal.SignalPackage.Signal;
+package com.bwelco.signal;
 
 import java.util.concurrent.LinkedBlockingQueue;
 

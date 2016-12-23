@@ -1,13 +1,8 @@
-package com.bwelco.signal.Sender;
+package com.bwelco.signal;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-
-import com.bwelco.signal.SignalPackage.Event;
-import com.bwelco.signal.SignalPackage.PendingEvent;
-import com.bwelco.signal.SignalPackage.RegisterInfo;
-import com.bwelco.signal.SignalPackage.Signal;
 
 import java.util.concurrent.PriorityBlockingQueue;
 

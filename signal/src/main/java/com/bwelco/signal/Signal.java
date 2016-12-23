@@ -1,13 +1,6 @@
-package com.bwelco.signal.SignalPackage;
+package com.bwelco.signal;
 
 import android.os.Looper;
-
-import com.bwelco.signal.MethodFinder.MethodFinderIndex;
-import com.bwelco.signal.MethodFinder.MethodFinderReflex;
-import com.bwelco.signal.Sender.AsyncSender;
-import com.bwelco.signal.Sender.EventHandler;
-import com.bwelco.signal.Sender.MainThreadSender;
-import com.bwelco.signal.Sender.TempBackgroundSender;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -69,11 +62,9 @@ public class Signal {
         }
 
     }
-    
-    
 
 
-    public void subscribe(Object target, List<RegisterMethodInfo> methodInfos) {
+    void subscribe(Object target, List<RegisterMethodInfo> methodInfos) {
 
         for (RegisterMethodInfo methodInfo : methodInfos) {
 
@@ -86,9 +77,6 @@ public class Signal {
                         newRegister.getMethodInfo().methodName);
                 return;
             } else {
-                EventLogger.i("has put!");
-                EventLogger.i("key = " + key);
-
                 REGISTERS.put(key, newRegister);
             }
 
@@ -111,18 +99,9 @@ public class Signal {
 
 
     }
-    
-//    public List<RegisterMethodInfo> findRegistedMethodByAnnotationIndex(Class<?> targetClass){
-//        List<RegisterMethodInfo> ret = METHOD_CACHE.get(targetClass);
-//        if (ret == null) {
-//            ret = MethodFinderIndex.find(targetClass);
-//            // 放入缓存里面
-//            METHOD_CACHE.put(targetClass, ret);
-//        }
-//        return ret;
-//    }
 
-    public List<RegisterMethodInfo> findRegistedMethod(Class<?> targetClass) {
+
+    List<RegisterMethodInfo> findRegistedMethod(Class<?> targetClass) {
         List<RegisterMethodInfo> ret = METHOD_CACHE.get(targetClass);
 
         if (ret == null) {
@@ -167,17 +146,17 @@ public class Signal {
         asyncSender = new AsyncSender(this);
     }
 
-    public void send(Class<?> targetClass, String methodName, Object... args) {
-       sendDelayed(targetClass, methodName, 0, args);
+    public void send(SubScriber subScriber, Object... args) {
+        sendDelayed(subScriber, 0, args);
     }
 
-    public void sendDelayed(Class<?> targetClass, String methodName,long delayMillis, Object... args){
+    public void sendDelayed(SubScriber subScriber, long delayMillis, Object... args) {
         // 获取当前线程的SendingThreadState
         SendingThreadState currentThread = currentSendingThreadState.get();
         // 获取队列
         List<Event> eventQueue = currentThread.eventQueue;
         // 添加当前事件
-        eventQueue.add(new Event(targetClass, methodName, args, delayMillis));
+        eventQueue.add(new Event(subScriber.getTargetClass(), subScriber.getMethodName(), args, delayMillis));
 
         // 正在发送事件
         if (!currentThread.isSending) {
@@ -199,37 +178,22 @@ public class Signal {
         }
     }
 
-    void sendSingleEvent(Event event, SendingThreadState threadState) {
+    private void sendSingleEvent(Event event, SendingThreadState threadState) {
 
         String key = event.targetClass.getName() + event.getTargetMethod();
         Object[] args = event.getParams();
-        EventLogger.i("send key = " + key);
-       // EventLogger.i("arg.length() = " + args.length);
 
         if (REGISTERS.containsKey(key)) {
 
             if (REGISTERS.get(key).getMethodInfo().getParams().length != args.length) {
-               // EventLogger.i("length = " + REGISTERS.get(key).getMethodInfo().getParams().length);
-                EventLogger.i(" param num not match!");
+                EventLogger.i("send param num not match, please check.");
                 return;
             }
 
-            int index = 0;
-            for (Class<?> paramType : REGISTERS.get(key).getMethodInfo().getParams()) {
-//                EventLogger.i("arg param = " + args[index].getClass().getName());
-//                EventLogger.i("regist param = " + paramType.getName());
-
-                if (!args[index++].getClass().equals(paramType)) {
-                    EventLogger.i(" param not match!");
-                    return;
-                }
-            }
-
-            //EventLogger.i("get!");
             sendEventToRegister(REGISTERS.get(key), event, threadState);
 
         } else {
-            EventLogger.i("can't get");
+            EventLogger.i("target class " + event.targetClass.getSimpleName() + " has not registed");
         }
     }
 
@@ -262,7 +226,8 @@ public class Signal {
         }
     }
 
-    public void invokeRegister(RegisterInfo registerInfo, Object... signal) {
+
+    void invokeRegister(RegisterInfo registerInfo, Object... signal) {
         try {
             registerInfo.methodInfo.method.invoke(registerInfo.target, signal);
         } catch (InvocationTargetException e) {
@@ -272,7 +237,7 @@ public class Signal {
         }
     }
 
-    public ExecutorService getExecutorService() {
+    ExecutorService getExecutorService() {
         if (executorService == null) {
             executorService = Executors.newCachedThreadPool();
         }

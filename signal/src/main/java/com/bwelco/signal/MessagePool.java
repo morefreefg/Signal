@@ -1,4 +1,4 @@
-package com.bwelco.signal.Sender;
+package com.bwelco.signal;
 
 import android.os.Message;
 

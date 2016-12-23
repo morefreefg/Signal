@@ -5,9 +5,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.bwelco.signal.SignalPackage.Signal;
-import com.bwelco.signal.SignalPackage.ThreadMode;
+import com.bwelco.signal.Signal;
 import com.bwelco.signal.SignalReceiver;
+import com.bwelco.signal.SubScriber;
+import com.bwelco.signal.ThreadMode;
+import com.bwelco.signaltest.GetMessage;
+import com.bwelco.signaltest.MessageSonTwo;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,18 +24,20 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Signal.getDefault().send(MainActivity.class, "get","test", 1);
+                Signal.getDefault().send(new SubScriber(MainActivity.class, "get_private"),
+                         new MessageSonTwo("admin"));
             }
         });
     }
 
     @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
-    public void get(String s, int i){
+    public void get(String s, GetMessage getMessage) {
         Log.i("admin", "get message " + s);
+        Log.i("admin", "get base message = " + getMessage.getMessage());
     }
 
     @SignalReceiver(threadMode = ThreadMode.MAINTHREAD)
-    public void get_private(float a){
+    public void get_private(float a) {
 
     }
 }

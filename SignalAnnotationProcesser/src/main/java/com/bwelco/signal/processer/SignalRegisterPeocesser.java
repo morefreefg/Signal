@@ -1,6 +1,6 @@
 package com.bwelco.signal.processer;
 
-import com.bwelco.signal.SignalPackage.ThreadMode;
+import com.bwelco.signal.ThreadMode;
 import com.bwelco.signal.SignalReceiver;
 
 import java.io.BufferedWriter;
@@ -109,10 +109,10 @@ public class SignalRegisterPeocesser extends AbstractProcessor {
 
             sb.append("package com.bwelco.signalsperf;\n" +
                     "\n" +
-                    "import com.bwelco.signal.MethodFinder.GetRegisterInfoInterface;\n" +
-                    "import com.bwelco.signal.MethodFinder.IndexMethodInfo;\n" +
-                    "import com.bwelco.signal.SignalPackage.RegisterMethodInfo;\n" +
-                    "import com.bwelco.signal.SignalPackage.ThreadMode;\n" +
+                    "import com.bwelco.signal.GetRegisterInfoInterface;\n" +
+                    "import com.bwelco.signal.IndexMethodInfo;\n" +
+                    "import com.bwelco.signal.RegisterMethodInfo;\n" +
+                    "import com.bwelco.signal.ThreadMode;\n" +
                     "\n" +
                     "import java.lang.reflect.Method;\n" +
                     "import java.util.HashMap;\n" +
@@ -129,30 +129,50 @@ public class SignalRegisterPeocesser extends AbstractProcessor {
                     "    private static Map<Class<?>, List<RegisterMethodInfo>> INDEX_MAP = null;\n" +
                     "\n" +
                     "    static {\n" +
-                    "        INDEX_MAP = new HashMap<Class<?>, List<RegisterMethodInfo>>();");
+                    "        INDEX_MAP = new HashMap<Class<?>, List<RegisterMethodInfo>>();\n" +
+                    "        targetInit();\n" +
+                    "    }\n" +
+                    "    \n" +
+                    "    private static void targetInit(){\n" );
 
             sb.append(writeMapPut());
 
-            sb.append("\n    }\n\n" +
+            sb.append("\n    }\n" +
+                    "    \n" +
+                    "    \n" +
+                    "    private static void putIndex(Class<?> targetClass, String methodName,\n" +
+                    "                                 ThreadMode threadMode, Class<?>... params){\n" +
+                    "        if (INDEX_MAP.containsKey(targetClass)) {\n" +
+                    "            INDEX_MAP.get(targetClass).add(revertInfo(new IndexMethodInfo(methodName,\n" +
+                    "                    threadMode, targetClass, params)));\n" +
+                    "        } else {\n" +
+                    "            List<RegisterMethodInfo> list = new LinkedList<RegisterMethodInfo>();\n" +
+                    "            list.add(revertInfo(new IndexMethodInfo(methodName,\n" +
+                    "                    threadMode, targetClass, params)));\n" +
+                    "            INDEX_MAP.put(targetClass, list);\n" +
+                    "        }\n" +
+                    "    }\n" +
                     "\n" +
-                            "    private static RegisterMethodInfo putIndex(IndexMethodInfo indexMethodInfo) {\n" +
-                            "        RegisterMethodInfo registerMethodInfo = null;\n" +
-                            "        try {\n" +
-                            "            Method method = indexMethodInfo.getTargetClass().getDeclaredMethod(\n" +
-                            "                    indexMethodInfo.getMethodName(), indexMethodInfo.getParams());\n" +
-                            "            registerMethodInfo = new RegisterMethodInfo(indexMethodInfo.getMethodName(),\n" +
-                            "                    indexMethodInfo.getThreadMode(), method, indexMethodInfo.getParams());\n" +
-                            "        } catch (NoSuchMethodException e) {\n" +
-                            "            e.printStackTrace();\n" +
-                            "        }\n" +
-                            "        return registerMethodInfo;\n" +
-                            "    }\n" +
-                            "\n" +
-                            "    @Override\n" +
-                            "    public List<RegisterMethodInfo> getRegisterByClass(Class<?> clazz) {\n" +
-                            "        return INDEX_MAP.get(clazz);\n" +
-                            "    }\n");
-            sb.append("\n\n}\n");
+                    "\n" +
+                    "    private static RegisterMethodInfo revertInfo(IndexMethodInfo indexMethodInfo) {\n" +
+                    "        RegisterMethodInfo registerMethodInfo = null;\n" +
+                    "        try {\n" +
+                    "            Method method = indexMethodInfo.getTargetClass().getDeclaredMethod(\n" +
+                    "                    indexMethodInfo.getMethodName(), indexMethodInfo.getParams());\n" +
+                    "            registerMethodInfo = new RegisterMethodInfo(indexMethodInfo.getMethodName(),\n" +
+                    "                    indexMethodInfo.getThreadMode(), method, indexMethodInfo.getParams());\n" +
+                    "        } catch (NoSuchMethodException e) {\n" +
+                    "            e.printStackTrace();\n" +
+                    "        }\n" +
+                    "        return registerMethodInfo;\n" +
+                    "    }\n" +
+                    "\n" +
+                    "    @Override\n" +
+                    "    public List<RegisterMethodInfo> getRegisterByClass(Class<?> clazz) {\n" +
+                    "        return INDEX_MAP.get(clazz);\n" +
+                    "    }\n" +
+                    "\n" +
+                    "}\n");
             writer.write(sb.toString());
             writer.flush();
             writer.close();
@@ -182,32 +202,33 @@ public class SignalRegisterPeocesser extends AbstractProcessor {
 
             sb.append(writePutIndex(targetClassName, methodName, params, pendingTargetInfo.threadMode));
         }
-
+        sb.deleteCharAt(sb.length() - 1);
+        sb.deleteCharAt(sb.length() - 1);
         return sb.toString();
     }
 
     private String writePutIndex(String targetClassName, String methodName, String[] params, ThreadMode threadMode) {
         StringBuffer sb = new StringBuffer("");
-        sb.append("\n        if (INDEX_MAP.containsKey(");
+        sb.append("        putIndex(");
         sb.append(targetClassName);
-        sb.append(")){\n");
-        sb.append("            INDEX_MAP.get(");
-        sb.append(targetClassName);
-        sb.append(").add(\n                    ");
+        sb.append(", ");
+        sb.append("\"");
+        sb.append(methodName);
+        sb.append("\", \n");
+        sb.append("                ");
+        sb.append(getThreadMode(threadMode));
+        sb.append(", \n");
 
-        sb.append(addPutIndexParam(methodName, threadMode, targetClassName, params));
-        sb.append(");\n");
-        sb.append("        } else {\n" +
-                "            List<RegisterMethodInfo> list = new LinkedList<RegisterMethodInfo>();\n" +
-                "            list.add(");
-        sb.append(addPutIndexParam(methodName, threadMode, targetClassName, params));
-        sb.append(");\n" +
-                "            INDEX_MAP.put(");
-        sb.append(targetClassName);
-        sb.append(", list);\n");
-        sb.append("        }\n");
+        for (int i = 0; i < params.length; i++) {
+            String param = params[i];
+            sb.append("                    " + param);
+
+            if (i != (params.length - 1)) {
+                sb.append(", \n");
+            }
+        }
+        sb.append(");\n\n");
         return sb.toString();
-
     }
 
     private String addPutIndexParam(String methodName, ThreadMode threadMode, String classname, String[] params) {

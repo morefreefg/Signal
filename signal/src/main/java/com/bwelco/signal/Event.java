@@ -1,4 +1,4 @@
-package com.bwelco.signal.SignalPackage;
+package com.bwelco.signal;
 
 import android.os.SystemClock;
 
