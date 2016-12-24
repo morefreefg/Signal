@@ -43,7 +43,7 @@ public class Signal {
         return defaultInstance;
     }
 
-    public void regist(Object target) {
+    public void subScribe(Object target) {
         Class<?> targetClass = target.getClass();
         // 反射获取注解方法
 
@@ -64,7 +64,7 @@ public class Signal {
     }
 
 
-    void subscribe(Object target, List<RegisterMethodInfo> methodInfos) {
+    private void subscribe(Object target, List<RegisterMethodInfo> methodInfos) {
 
         for (RegisterMethodInfo methodInfo : methodInfos) {
 
@@ -83,7 +83,7 @@ public class Signal {
         }
     }
 
-    public void unRegist(Object target) {
+    public void unSubScribe(Object target) {
         List<RegisterMethodInfo> methodInfos = findRegistedMethod(target.getClass());
 
         for (RegisterMethodInfo methodInfo : methodInfos) {
