@@ -8,12 +8,11 @@
 * 支持可变参数，支持java基本数据类型，支持事件继承。
 * 支持延时事件。
 
-### 在你的工程中使用
+## 在你的工程中使用
 
 Gradle:
 ```
 compile 'com.bwelco:Signal:1.0.0'
-
 ```
 
 Maven:
@@ -81,3 +80,6 @@ SubScriber 默认构造函数有两个值，第一个是订阅者的class对象�
 如果想发送延时事件，使用sendDelayed，并在subscriber参数后添加延时的毫秒数（精确度不可控）。
 后面的参数即为传参的对象，支持可变参数，支持基本类型参数，支持父类、接口等java支持的传参方式（默认不做函数参数类型检查）。
 
+## License
+
+Copyright (C) 2016-2016 bwelco (http://bwelco.coding.me)
