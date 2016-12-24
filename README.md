@@ -37,7 +37,7 @@ threadMode有四种，默认为POSTERTHREAD。
 
 1.POSTERTHREAD : 此函数将在发送线程执行。
 
-2.MAINTHREAD : 此函数在主线程中执行，注意不要写复杂的代码。
+2.MAINTHREAD : 此函数在主线程中执行，注意不要写复杂的代码以免导致ANR。
 
 3.BACKGROUND : 此函数在Signal默认的后台线程执行。每个事件按照顺序（在不设置延时参数的情况下）依次执行。
 
@@ -60,19 +60,19 @@ public void onStop() {
 
 ### 3.发送事件
 ```java
+
+send(SubScriber subscriber, Object arg1, Object arg2...)
+
+sendDelayed(SubScriber subscriber, long delayMillis ,Object arg1, Object arg2...)
+
+```
+
+```java
  Signal.getDefault().send(new SubScriber(MainActivity.class, "onSignal"),
                         "message", "message2");
 
  Signal.getDefault().sendDelayed(new SubScriber(MainActivity.class, "onSignal"), 1000,
                         "message", "message2");
-
-```
-
-```java
-
-send(SubScriber subscriber, Object arg1, Object arg2...)
-
-sendDelayed(SubScriber subscriber, long delayMillis ,Object arg1, Object arg2...)
 
 ```
 
