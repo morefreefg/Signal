@@ -1,16 +1,19 @@
 package com.bwelco.signal;
 
+
+import com.bwelco.signal.processer.ThreadMode;
+
 /**
  * Created by bwelco on 2016/12/22.
  */
 
 public class IndexMethodInfo {
     String methodName;
-    com.bwelco.signal.ThreadMode threadMode;
+    ThreadMode threadMode;
     Class<?> targetClass;
     Class<?>[] params;
 
-    public IndexMethodInfo(String methodName, com.bwelco.signal.ThreadMode threadMode, Class<?> targetClass, Class<?>... params) {
+    public IndexMethodInfo(String methodName, ThreadMode threadMode, Class<?> targetClass, Class<?>... params) {
         this.methodName = methodName;
         this.threadMode = threadMode;
         this.targetClass = targetClass;
@@ -25,11 +28,11 @@ public class IndexMethodInfo {
         this.methodName = methodName;
     }
 
-    public com.bwelco.signal.ThreadMode getThreadMode() {
+    public ThreadMode getThreadMode() {
         return threadMode;
     }
 
-    public void setThreadMode(com.bwelco.signal.ThreadMode threadMode) {
+    public void setThreadMode(ThreadMode threadMode) {
         this.threadMode = threadMode;
     }
 

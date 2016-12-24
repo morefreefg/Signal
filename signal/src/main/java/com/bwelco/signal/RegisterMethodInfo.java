@@ -1,5 +1,8 @@
 package com.bwelco.signal;
 
+
+import com.bwelco.signal.processer.ThreadMode;
+
 import java.lang.reflect.Method;
 
 /**

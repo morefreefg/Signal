@@ -1,7 +1,5 @@
 package com.bwelco.signal.processer;
 
-import com.bwelco.signal.ThreadMode;
-import com.bwelco.signal.SignalReceiver;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -60,7 +58,7 @@ public class SignalRegisterPeocesser extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> ret = new HashSet<String>();
-        ret.add("com.bwelco.signal.SignalReceiver");
+        ret.add("com.bwelco.signal.processer.SignalReceiver");
         return ret;
     }
 
@@ -112,7 +110,7 @@ public class SignalRegisterPeocesser extends AbstractProcessor {
                     "import com.bwelco.signal.GetRegisterInfoInterface;\n" +
                     "import com.bwelco.signal.IndexMethodInfo;\n" +
                     "import com.bwelco.signal.RegisterMethodInfo;\n" +
-                    "import com.bwelco.signal.ThreadMode;\n" +
+                    "import com.bwelco.signal.processer.ThreadMode;\n" +
                     "\n" +
                     "import java.lang.reflect.Method;\n" +
                     "import java.util.HashMap;\n" +

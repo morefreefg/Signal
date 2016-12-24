@@ -1,22 +1,5 @@
 apply plugin: 'com.android.application'
 
-//配置在Project下的build.gradle中
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    }
-}
-
-//配置到Module下的build.gradle中
-apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
-
-
 repositories {
     jcenter()
 }
@@ -24,19 +7,9 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     compile 'com.android.support:appcompat-v7:23.0.1'
     testCompile 'junit:junit:4.12'
     compile project(':signal')
-    apt project(':SignalAnnotationProcesser')
-}
-
-apt {
-    arguments {
-        eventBusIndex "org.greenrobot.eventbusperf.MyEventBusIndex"
-    }
 }
 
 android {

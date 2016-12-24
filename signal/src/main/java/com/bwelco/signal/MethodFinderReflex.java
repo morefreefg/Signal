@@ -1,5 +1,8 @@
 package com.bwelco.signal;
 
+
+import com.bwelco.signal.processer.SignalReceiver;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -16,9 +19,9 @@ public class MethodFinderReflex {
     private static final int MODIFIERS_IGNORE = Modifier.ABSTRACT | Modifier.STATIC | BRIDGE | SYNTHETIC;
 
 
-    public static List<com.bwelco.signal.RegisterMethodInfo> find(Class<?> clazz) {
+    public static List<RegisterMethodInfo> find(Class<?> clazz) {
 
-        List<com.bwelco.signal.RegisterMethodInfo> ret = new ArrayList<com.bwelco.signal.RegisterMethodInfo>();
+        List<RegisterMethodInfo> ret = new ArrayList<RegisterMethodInfo>();
 
         while (clazz != null) {
             findByClass(clazz, ret);
@@ -36,14 +39,14 @@ public class MethodFinderReflex {
     }
 
     // 通过反射获取方法
-    private static void findByClass(Class<?> clazz, List<com.bwelco.signal.RegisterMethodInfo> ret) {
+    private static void findByClass(Class<?> clazz, List<RegisterMethodInfo> ret) {
 
         Method[] methods;
 
         methods = clazz.getDeclaredMethods();
 
         for (Method method : methods) {
-            com.bwelco.signal.RegisterMethodInfo registerMethodInfo = new com.bwelco.signal.RegisterMethodInfo();
+            RegisterMethodInfo registerMethodInfo = new RegisterMethodInfo();
             int modifiers = method.getModifiers();
 
             // 是public方法 并且不是 抽象、静态等方法
