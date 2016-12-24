@@ -44,7 +44,7 @@ threadMode有四种，默认为POSTERTHREAD。
 4.ASYNC : 此函数会从Signal提供的线程池中随机抽取线程执行。事件之间互不干扰，并发执行。
 
 ### 2. 注册Signal
-  ```
+  ```java
 @Override
 public void onStart() {
       super.onStart();
@@ -59,7 +59,7 @@ public void onStop() {
 ```
 
 ### 3.发送事件
-```
+```java
  Signal.getDefault().send(new SubScriber(MainActivity.class, "onSignal"),
                         "message", "message2");
 
@@ -68,7 +68,7 @@ public void onStop() {
 
 ```
 
-```
+```java
 
 send(SubScriber subscriber, Object arg1, Object arg2...)
 
