@@ -13,7 +13,7 @@
 
 Gradle:
 ```
-compile 'com.bwelco:Signal:1.0.1'
+compile 'com.bwelco:signal:1.0.2'
 ```
 
 Maven:
