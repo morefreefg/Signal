@@ -12,12 +12,12 @@
 ## 在你的工程中使用
 
 Gradle:
-```
+```gradle
 compile 'com.bwelco:signal:1.0.3'
 ```
 
 Maven:
-```
+```xml
 <dependency>
   <groupId>com.bwelco</groupId>
   <artifactId>Signal</artifactId>
@@ -44,7 +44,7 @@ threadMode有四种，默认为POSTERTHREAD。
 4.ASYNC : 此函数会从Signal提供的线程池中随机抽取线程执行。事件之间互不干扰，并发执行。
 
 ### 2. 注册Signal
-  ```java
+```java
 @Override
 public void onStart() {
       super.onStart();
@@ -78,7 +78,7 @@ sendDelayed(SubScriber subscriber, long delayMillis ,Object arg1, Object arg2...
 
 SubScriber 默认构造函数有两个值，第一个是订阅者的class对象，第二个是订阅者的函数名。比如想发送给MainActivity的onSignal函数
 可用new SubScriber(MainActivity.class, "onSignal")来构造接受者。
-如果想发送延时事件，使用sendDelayed，并在subscriber参数后添加延时的毫秒数（精确度不可控）。
+如果想发送延时事件，使用sendDelayed，并在subscriber参数后添加延时的毫秒数（精确度不可控，posterthread不支持延时函数）。
 后面的参数即为传参的对象，支持可变参数，支持基本类型参数，支持父类、接口等java支持的传参方式（默认不做函数参数类型检查）。
 
 ## License
