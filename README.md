@@ -35,13 +35,13 @@ public void onSignal(String s1, String s2) {}
 
 threadMode有四种，默认为POSTERTHREAD。
 
-1.POSTERTHREAD : 此函数将在发送线程执行。
+* POSTERTHREAD : 此函数将在发送线程执行。
 
-2.MAINTHREAD : 此函数在主线程中执行，注意不要写复杂的代码以免导致ANR。
+* MAINTHREAD : 此函数在主线程中执行，注意不要写复杂的代码以免导致ANR。
 
-3.BACKGROUND : 此函数在Signal默认的后台线程执行。每个事件按照顺序（在不设置延时参数的情况下）依次执行。
+* BACKGROUND : 此函数在Signal默认的后台线程执行。每个事件按照顺序（在不设置延时参数的情况下）依次执行。
 
-4.ASYNC : 此函数会从Signal提供的线程池中随机抽取线程执行。事件之间互不干扰，并发执行。
+* ASYNC : 此函数会从Signal提供的线程池中随机抽取线程执行。事件之间互不干扰，并发执行。
 
 ### 2. 注册Signal
 ```java
@@ -76,10 +76,9 @@ sendDelayed(SubScriber subscriber, long delayMillis ,Object arg1, Object arg2...
 
 ```
 
-SubScriber 默认构造函数有两个值，第一个是订阅者的class对象，第二个是订阅者的函数名。比如想发送给MainActivity的onSignal函数
-可用new SubScriber(MainActivity.class, "onSignal")来构造接受者。
-如果想发送延时事件，使用sendDelayed，并在subscriber参数后添加延时的毫秒数（精确度不可控，posterthread不支持延时函数）。
-后面的参数即为传参的对象，支持可变参数，支持基本类型参数，支持父类、接口等java支持的传参方式（默认不做函数参数类型检查）。
+SubScriber : 事件处理函数，参数一为订阅者的class对象，参数二为处理函数的函数名。
+delayMillis : 延时时间（毫秒），注意POSTERTHREAD不支持延时函数，调用时会抛出异常。
+Object... args : 可变参数，支持java基本数据类型，支持基本类型参数，支持父类、接口等java支持的传参方式（默认不做函数参数类型检查）。
 
 ## License
 
