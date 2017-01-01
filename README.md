@@ -77,7 +77,9 @@ sendDelayed(SubScriber subscriber, long delayMillis ,Object arg1, Object arg2...
 ```
 
 SubScriber : 事件处理函数，参数一为订阅者的class对象，参数二为处理函数的函数名。
+
 delayMillis : 延时时间（毫秒），注意POSTERTHREAD不支持延时函数，调用时会抛出异常。
+
 Object... args : 可变参数，支持java基本数据类型，支持基本类型参数，支持父类、接口等java支持的传参方式（默认不做函数参数类型检查）。
 
 ## License
