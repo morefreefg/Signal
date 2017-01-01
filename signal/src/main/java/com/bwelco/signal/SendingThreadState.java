@@ -11,6 +11,5 @@ public class SendingThreadState {
     final List<Event> eventQueue = new ArrayList<Event>();
     boolean isSending;
     boolean isMainThread;
-    RegisterInfo registerInfo;
-    Object event;
+    boolean delay;
 }

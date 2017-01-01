@@ -147,10 +147,14 @@ public class Signal {
     }
 
     public void send(SubScriber subScriber, Object... args) {
-        sendDelayed(subScriber, 0, args);
+        sendEvent(subScriber, 0, false, args);
     }
 
     public void sendDelayed(SubScriber subScriber, long delayMillis, Object... args) {
+        sendEvent(subScriber, delayMillis, true, args);
+    }
+
+    void sendEvent(SubScriber subScriber, long delayMillis, boolean delay, Object... args) {
         // 获取当前线程的SendingThreadState
         SendingThreadState currentThread = currentSendingThreadState.get();
         // 获取队列
@@ -162,6 +166,7 @@ public class Signal {
         if (!currentThread.isSending) {
             // 判断是否是主线程
             currentThread.isMainThread = Looper.getMainLooper().getThread() == Thread.currentThread();
+            currentThread.delay = delay;
 
             try {
                 // 清空发送队列
@@ -201,7 +206,11 @@ public class Signal {
         switch (register.methodInfo.getThreadMode()) {
 
             case POSTERTHREAD:
-                invokeRegister(register, event.getParams());
+                if (threadState.delay) {
+                    throw new SignalException("delay not working with posting thread :)");
+                } else {
+                    invokeRegister(register, event.getParams());
+                }
                 break;
 
             case MAINTHREAD:

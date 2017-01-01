@@ -38,7 +38,7 @@ ext {
     libraryDescription = 'signal for Android'
     siteUrl = 'https://github.com/bwelco/Signal'
     gitUrl = 'https://github.com/bwelco/Signal.git'
-    libraryVersion = '1.0.2'
+    libraryVersion = '1.0.3'
     developerId = 'bwelco'
     developerName = 'feng guang'
     developerEmail = 'morefreefg@gmail.com'
