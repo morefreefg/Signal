@@ -186,8 +186,7 @@ public class Signal {
         if (REGISTERS.containsKey(key)) {
 
             if (REGISTERS.get(key).getMethodInfo().getParams().length != args.length) {
-                EventLogger.i("send param num not match, please check.");
-                return;
+                throw new SignalException("send param num not match, please check.");
             }
 
             sendEventToRegister(REGISTERS.get(key), event, threadState);
